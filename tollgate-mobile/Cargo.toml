@@ -1,0 +1,48 @@
+[package]
+name = "tollgate-mobile"
+description = "Native Android TollGate client — Rust core exposed to Kotlin via UniFFI. Ports the JS captive-portal client to a fully-native app speaking the TollGate v2 CBOR protocol."
+version.workspace = true
+edition = "2021"
+license.workspace = true
+authors.workspace = true
+
+[lib]
+crate-type = ["lib", "staticlib", "cdylib"]
+name = "tollgate_mobile"
+
+[features]
+default = []
+# Enable FIPS mesh integration (Linux host only — does not compile for Android).
+fips = ["dep:fips"]
+
+[dependencies]
+tollgate-protocol = { workspace = true }
+# FIPS path dep — optional, enabled via the "fips" feature. FIPS v0.4.0 does not
+# cross-compile to Android (Linux-only platform/TUN code). Phase 2 handles FIPS
+# integration; until then the core works via tollgate-rs HTTP protocol alone.
+fips = { workspace = true, optional = true }
+jni = "0.21"
+tokio = { workspace = true }
+reqwest = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+hex = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+cashu = { workspace = true }
+cdk = { workspace = true }
+cdk-sqlite = { workspace = true }
+base64 = "0.22"
+getrandom = "0.3"
+secp256k1 = { workspace = true }
+tracing = { workspace = true }
+uniffi = { workspace = true }
+libc = "0.2"
+
+[dev-dependencies]
+# In-process mock gateway for the integration test — same axum the real
+# tollgate-net server uses, speaking the real CBOR protocol end to end.
+axum = { version = "0.8", features = ["ws"] }
+tower = { version = "0.5", features = ["util"] }
+tokio = { workspace = true, features = ["test-util", "rt-multi-thread", "macros"] }
+tollgate-protocol = { workspace = true }
